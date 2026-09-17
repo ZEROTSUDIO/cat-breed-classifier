@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Model files (too large for GitHub — store on Google Drive)
+model/
+*.h5
+*.keras
+*.tflite
+*.pkl
+*.joblib
+
+# Kaggle API key — NEVER commit this!
+kaggle.json
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code
+.vscode/
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Logs
+*.log
+logs/
+
+# Generated images (from training)
+training_history.png
+confusion_matrix.png
