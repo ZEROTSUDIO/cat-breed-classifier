@@ -82,18 +82,23 @@ print(f"📁 Save directory: {SAVE_DIR}")"""
 ))
 
 cells.append(code(
-"""# ─── Upload your kaggle.json API key ───────────────────────────────────
-# Go to kaggle.com → Account → API → Create New Token → upload the file below
-from google.colab import files
-import os, shutil
+"""# ─── Paste your Kaggle API token here ─────────────────────────────────
+# Go to kaggle.com → Settings → API → Create New Token
+# Copy the token string (starts with KGAT_...) and paste below
 
-print("📁 Upload your kaggle.json file...")
-uploaded = files.upload()
+import os
 
-os.makedirs('/root/.config/kaggle', exist_ok=True)
-shutil.move('/content/kaggle.json', '/root/.config/kaggle/kaggle.json')
-os.chmod('/root/.config/kaggle/kaggle.json', 0o600)
-print("✅ kaggle.json configured!")"""
+KAGGLE_TOKEN = 'KGAT_9740d09bffdde6753ab9223292ebc5e2'  # <-- your token
+
+# Save token to the path kaggle CLI reads automatically
+os.makedirs('/root/.kaggle', exist_ok=True)
+with open('/root/.kaggle/access_token', 'w') as f:
+    f.write(KAGGLE_TOKEN)
+os.chmod('/root/.kaggle/access_token', 0o600)
+
+# Quick test — should print dataset info without errors
+!kaggle datasets list --max-size 1 -q 2>&1 | head -3
+print("✅ Kaggle API token configured!")"""
 ))
 
 cells.append(code(
