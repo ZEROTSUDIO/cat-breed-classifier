@@ -26,8 +26,30 @@ IMG_SIZE         = (224, 224)
 @st.cache_resource(show_spinner="Loading model...")
 def load_model():
     import tensorflow as tf
-    model = tf.keras.models.load_model(MODEL_PATH)
-    return model
+    try:
+        model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+        return model
+    except Exception:
+        # Fallback: rebuild MobileNetV2 architecture and load weights directly
+        with open(CLASS_NAMES_PATH, encoding="utf-8") as f:
+            num_classes = len(json.load(f))
+        base = tf.keras.applications.MobileNetV2(
+            input_shape=(224, 224, 3),
+            include_top=False,
+            weights=None,
+        )
+        base.trainable = False
+        inputs = tf.keras.Input(shape=(224, 224, 3))
+        x = base(inputs, training=False)
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dropout(0.30)(x)
+        x = tf.keras.layers.Dense(256, activation="relu")(x)
+        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.Dropout(0.30)(x)
+        outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+        model = tf.keras.Model(inputs, outputs)
+        model.load_weights(MODEL_PATH)
+        return model
 
 @st.cache_data
 def load_metadata():
