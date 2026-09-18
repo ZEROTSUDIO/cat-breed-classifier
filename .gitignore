@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+
+# Model folder — keep .h5 and .json, skip large training/visualization images
+model/*.png
 .Python
 *.egg
 *.egg-info/
@@ -19,10 +22,8 @@ env/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Model files (too large for GitHub — store on Google Drive)
-model/
-*.h5
-*.keras
+# Large model formats (only exclude if over 100 MB)
+# *.h5 files at ~26 MB are fine for GitHub — not excluded
 *.tflite
 *.pkl
 *.joblib

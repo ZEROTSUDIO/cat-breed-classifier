@@ -1,0 +1,392 @@
+{
+  "abyssinian": {
+    "origin": "Ethiopia",
+    "lifespan": "9–15 yrs",
+    "temperament": "Active, Curious, Playful, Intelligent",
+    "fun_fact": "Often depicted in ancient Egyptian art — one of the oldest known breeds."
+  },
+  "american_bobtail": {
+    "origin": "United States",
+    "lifespan": "11–15 yrs",
+    "temperament": "Friendly, Intelligent, Adaptable",
+    "fun_fact": "They love to play fetch — very dog-like personality!"
+  },
+  "american_curl": {
+    "origin": "United States",
+    "lifespan": "12–16 yrs",
+    "temperament": "Affectionate, Social, Gentle",
+    "fun_fact": "Born with straight ears that curl backward within days of birth."
+  },
+  "american_shorthair": {
+    "origin": "United States",
+    "lifespan": "15–20 yrs",
+    "temperament": "Easygoing, Adaptable, Gentle",
+    "fun_fact": "One of the most popular cat breeds in the USA, descended from working cats."
+  },
+  "american_wirehair": {
+    "origin": "United States",
+    "lifespan": "14–18 yrs",
+    "temperament": "Adaptable, Affectionate, Playful",
+    "fun_fact": "Their unique wiry coat is a natural mutation first seen in 1966."
+  },
+  "balinese": {
+    "origin": "United States",
+    "lifespan": "12–20 yrs",
+    "temperament": "Vocal, Intelligent, Affectionate",
+    "fun_fact": "Sometimes called the 'long-haired Siamese' — same vocal personality!"
+  },
+  "bengal": {
+    "origin": "United States",
+    "lifespan": "12–16 yrs",
+    "temperament": "Active, Energetic, Curious, Playful",
+    "fun_fact": "Descended from Asian Leopard Cats — wild look, domestic heart."
+  },
+  "birman": {
+    "origin": "Burma (Myanmar)",
+    "lifespan": "12–16 yrs",
+    "temperament": "Gentle, Affectionate, Social",
+    "fun_fact": "Legend says Birmans were sacred temple cats blessed by a golden goddess."
+  },
+  "bombay": {
+    "origin": "United States",
+    "lifespan": "12–18 yrs",
+    "temperament": "Affectionate, Playful, Social",
+    "fun_fact": "Bred to look like a miniature black panther — nicknamed 'parlor panther'."
+  },
+  "british_shorthair": {
+    "origin": "United Kingdom",
+    "lifespan": "12–20 yrs",
+    "temperament": "Calm, Easygoing, Affectionate",
+    "fun_fact": "The Cheshire Cat from Alice in Wonderland was inspired by this breed!"
+  },
+  "burmese": {
+    "origin": "Burma (Myanmar)",
+    "lifespan": "16–18 yrs",
+    "temperament": "Social, Affectionate, Energetic",
+    "fun_fact": "All Burmese worldwide trace back to a single female cat brought to the USA in 1930."
+  },
+  "chartreux": {
+    "origin": "France",
+    "lifespan": "11–15 yrs",
+    "temperament": "Quiet, Gentle, Loyal, Playful",
+    "fun_fact": "French monks at the Grande Chartreuse monastery are said to have bred this cat."
+  },
+  "chausie": {
+    "origin": "United States",
+    "lifespan": "12–14 yrs",
+    "temperament": "Active, Loyal, Intelligent",
+    "fun_fact": "Descended from the Jungle Cat (Felis chaus) — one of the closest to wild cats."
+  },
+  "cornish_rex": {
+    "origin": "Cornwall, UK",
+    "lifespan": "11–15 yrs",
+    "temperament": "Active, Playful, Sociable, Mischievous",
+    "fun_fact": "Has only the soft undercoat — no guard hairs, giving a uniquely curly look."
+  },
+  "cymric": {
+    "origin": "Canada / Isle of Man",
+    "lifespan": "8–14 yrs",
+    "temperament": "Gentle, Playful, Intelligent",
+    "fun_fact": "Essentially a long-haired Manx — they share the taillessness gene."
+  },
+  "cyprus": {
+    "origin": "Cyprus",
+    "lifespan": "12–15 yrs",
+    "temperament": "Adaptable, Friendly, Independent",
+    "fun_fact": "One of the oldest domesticated cat breeds — evidence dates back 9,500 years!"
+  },
+  "devon_rex": {
+    "origin": "Devon, UK",
+    "lifespan": "9–15 yrs",
+    "temperament": "Mischievous, Playful, People-oriented",
+    "fun_fact": "Called 'pixie cats' due to their large ears and elfin face."
+  },
+  "donskoy": {
+    "origin": "Russia",
+    "lifespan": "12–15 yrs",
+    "temperament": "Affectionate, Loyal, Curious",
+    "fun_fact": "Hairlessness is caused by a dominant gene — unlike Sphynx which is recessive."
+  },
+  "egyptian_mau": {
+    "origin": "Egypt",
+    "lifespan": "12–15 yrs",
+    "temperament": "Active, Loyal, Playful",
+    "fun_fact": "The only naturally spotted domestic cat breed — spots are in the coat, not just the skin!"
+  },
+  "european_shorthair": {
+    "origin": "Europe",
+    "lifespan": "15–20 yrs",
+    "temperament": "Adaptable, Playful, Independent",
+    "fun_fact": "The most common cat in Europe, descended from cats the Romans spread across the continent."
+  },
+  "exotic_shorthair": {
+    "origin": "United States",
+    "lifespan": "12–15 yrs",
+    "temperament": "Calm, Gentle, Playful, Affectionate",
+    "fun_fact": "Nicknamed 'the lazy man's Persian' — same look, easier-to-maintain coat."
+  },
+  "german_rex": {
+    "origin": "Germany",
+    "lifespan": "12–15 yrs",
+    "temperament": "Affectionate, Playful, Curious, Social",
+    "fun_fact": "One of the first curly-coated breeds, discovered in Germany after World War II."
+  },
+  "havana_brown": {
+    "origin": "United Kingdom",
+    "lifespan": "10–15 yrs",
+    "temperament": "Affectionate, Curious, Playful, Social",
+    "fun_fact": "The only all-brown cat breed — their rich mahogany color inspired the name 'Havana'."
+  },
+  "himalayan": {
+    "origin": "United States",
+    "lifespan": "9–15 yrs",
+    "temperament": "Calm, Gentle, Sweet, Quiet",
+    "fun_fact": "A Persian × Siamese cross — Persian body with Siamese color points."
+  },
+  "japanese_bobtail": {
+    "origin": "Japan",
+    "lifespan": "15–18 yrs",
+    "temperament": "Active, Vocal, Sociable, Friendly",
+    "fun_fact": "The 'Maneki-neko' lucky waving cat figurine is modeled after this breed!"
+  },
+  "karelian_bobtail": {
+    "origin": "Russia / Finland",
+    "lifespan": "12–15 yrs",
+    "temperament": "Calm, Friendly, Adaptable",
+    "fun_fact": "A rare natural breed from Karelian forests with a pom-pom tail."
+  },
+  "khao_manee": {
+    "origin": "Thailand",
+    "lifespan": "10–12 yrs",
+    "temperament": "Curious, Playful, Affectionate, Social",
+    "fun_fact": "An ancient Thai royal cat — once exclusive to royalty."
+  },
+  "korat": {
+    "origin": "Thailand",
+    "lifespan": "15+ yrs",
+    "temperament": "Gentle, Loyal, Playful, Affectionate",
+    "fun_fact": "In Thailand, Korats are considered good luck and gifted to newlyweds."
+  },
+  "korean_bobtail": {
+    "origin": "Korea",
+    "lifespan": "10–14 yrs",
+    "temperament": "Active, Curious, Friendly, Independent",
+    "fun_fact": "A natural breed from Korea with a distinctive short, pom-pom tail."
+  },
+  "kurilian_bobtail": {
+    "origin": "Russia (Kuril Islands)",
+    "lifespan": "15–20 yrs",
+    "temperament": "Gentle, Social, Playful, Adaptable",
+    "fun_fact": "Natural hunters from the remote Kuril Islands — excellent fishers!"
+  },
+  "laperm": {
+    "origin": "United States",
+    "lifespan": "10–15 yrs",
+    "temperament": "Affectionate, Gentle, Curious, Active",
+    "fun_fact": "Born bald, they grow a unique curly coat — each cat's curls are different!"
+  },
+  "lykoi": {
+    "origin": "United States",
+    "lifespan": "12–15 yrs",
+    "temperament": "Loyal, Playful, Friendly, Curious",
+    "fun_fact": "Called the 'Werewolf Cat' — their patchy coat gives a spooky, Halloween appearance."
+  },
+  "maine_coon": {
+    "origin": "United States (Maine)",
+    "lifespan": "12–15 yrs",
+    "temperament": "Friendly, Playful, Gentle, Dog-like",
+    "fun_fact": "The largest domestic cat breed — males can reach 18 lbs! They love water."
+  },
+  "manx": {
+    "origin": "Isle of Man",
+    "lifespan": "14–16 yrs",
+    "temperament": "Gentle, Playful, Social, Loyal",
+    "fun_fact": "Naturally tailless due to a genetic mutation — can be fully tailless or have a stub."
+  },
+  "mekong_bobtail": {
+    "origin": "Southeast Asia",
+    "lifespan": "12–15 yrs",
+    "temperament": "Affectionate, Loyal, Social, Gentle",
+    "fun_fact": "Named after the Mekong River — historically kept by royalty across Southeast Asia."
+  },
+  "munchkin": {
+    "origin": "United States",
+    "lifespan": "12–15 yrs",
+    "temperament": "Playful, Outgoing, Affectionate, Curious",
+    "fun_fact": "Their short legs are a natural mutation — they can still run surprisingly fast!"
+  },
+  "nebelung": {
+    "origin": "United States",
+    "lifespan": "15–18 yrs",
+    "temperament": "Gentle, Shy, Loyal, Affectionate",
+    "fun_fact": "Named after German mythology ('creature of the mist') — their shimmery coat inspired it."
+  },
+  "norwegian_forest_cat": {
+    "origin": "Norway",
+    "lifespan": "12–16 yrs",
+    "temperament": "Independent, Gentle, Adventurous",
+    "fun_fact": "Vikings likely kept these cats on ships to catch mice during long voyages!"
+  },
+  "ocicat": {
+    "origin": "United States",
+    "lifespan": "12–18 yrs",
+    "temperament": "Active, Sociable, Curious, Playful",
+    "fun_fact": "Looks wild but is entirely domestic — created by accident from Siamese × Abyssinian crosses."
+  },
+  "oregon_rex": {
+    "origin": "United States (Oregon)",
+    "lifespan": "12–15 yrs",
+    "temperament": "Playful, Affectionate, Gentle, Social",
+    "fun_fact": "An extremely rare curly-coated breed — now considered an extinct separate variety."
+  },
+  "oriental_shorthair": {
+    "origin": "United Kingdom",
+    "lifespan": "12–15 yrs",
+    "temperament": "Vocal, Sociable, Affectionate, Demanding",
+    "fun_fact": "Comes in over 300 color and pattern combinations — more than any other breed!"
+  },
+  "persian": {
+    "origin": "Iran (Persia)",
+    "lifespan": "12–17 yrs",
+    "temperament": "Gentle, Quiet, Calm, Affectionate",
+    "fun_fact": "Their luxurious coat can grow up to 6 inches long and needs daily brushing."
+  },
+  "peterbald": {
+    "origin": "Russia (St. Petersburg)",
+    "lifespan": "12–15 yrs",
+    "temperament": "Affectionate, Curious, Energetic, Social",
+    "fun_fact": "Created in 1994 by crossing a Donskoy with an Oriental Shorthair."
+  },
+  "pixie_bob": {
+    "origin": "United States",
+    "lifespan": "13–15 yrs",
+    "temperament": "Sociable, Loyal, Gentle, Dog-like",
+    "fun_fact": "Rumored to descend from bobcats — DNA tests show they are fully domestic."
+  },
+  "ragamuffin": {
+    "origin": "United States",
+    "lifespan": "12–16 yrs",
+    "temperament": "Gentle, Calm, Affectionate, Patient",
+    "fun_fact": "They go completely limp when held — nicknamed 'puppy cats'."
+  },
+  "ragdoll": {
+    "origin": "United States",
+    "lifespan": "12–17 yrs",
+    "temperament": "Gentle, Relaxed, Affectionate, Calm",
+    "fun_fact": "Named 'Ragdoll' because they go limp and floppy when you pick them up!"
+  },
+  "russian_blue": {
+    "origin": "Russia",
+    "lifespan": "15–20 yrs",
+    "temperament": "Gentle, Reserved, Loyal, Intelligent",
+    "fun_fact": "Their double coat has silver-tipped guard hairs giving a shimmering blue glow."
+  },
+  "safari": {
+    "origin": "United States",
+    "lifespan": "12–16 yrs",
+    "temperament": "Active, Curious, Affectionate, Energetic",
+    "fun_fact": "A rare hybrid from domestic cats × wild Geoffroy's Cat from South America."
+  },
+  "savannah": {
+    "origin": "United States",
+    "lifespan": "12–20 yrs",
+    "temperament": "Active, Adventurous, Loyal, Curious",
+    "fun_fact": "The tallest domestic cat — crossed with Serval, they can jump over 8 feet high!"
+  },
+  "scottish_fold": {
+    "origin": "Scotland",
+    "lifespan": "11–14 yrs",
+    "temperament": "Adaptable, Sweet, Calm, Gentle",
+    "fun_fact": "All Scottish Folds trace back to one barn cat named Susie, found in Scotland in 1961."
+  },
+  "selkirk_rex": {
+    "origin": "United States",
+    "lifespan": "14–15 yrs",
+    "temperament": "Tolerant, Loving, Playful, Patient",
+    "fun_fact": "Named after the Selkirk Mountains — the only curly-coated breed named after a person!"
+  },
+  "serengeti": {
+    "origin": "United States",
+    "lifespan": "10–15 yrs",
+    "temperament": "Active, Vocal, Sociable, Energetic",
+    "fun_fact": "Bred to look like a Serval — from Bengal × Oriental Shorthair crosses, no wild blood."
+  },
+  "siberian": {
+    "origin": "Russia",
+    "lifespan": "11–18 yrs",
+    "temperament": "Playful, Affectionate, Adventurous, Loyal",
+    "fun_fact": "Russia's national cat — centuries-old forest breed, and semi-hypoallergenic!"
+  },
+  "singapura": {
+    "origin": "Singapore",
+    "lifespan": "11–15 yrs",
+    "temperament": "Curious, Playful, Affectionate, Sociable",
+    "fun_fact": "The smallest domestic cat breed — adults weigh only 4–8 pounds!"
+  },
+  "sokoke": {
+    "origin": "Kenya",
+    "lifespan": "9–15 yrs",
+    "temperament": "Active, Sociable, Intelligent, Dog-like",
+    "fun_fact": "One of the rarest breeds — discovered living wild in Kenya's Arabuko-Sokoke Forest."
+  },
+  "somali": {
+    "origin": "United States / Canada",
+    "lifespan": "12–16 yrs",
+    "temperament": "Active, Curious, Playful, Sociable",
+    "fun_fact": "Called the 'fox cat' — essentially a long-haired Abyssinian with a fluffy tail."
+  },
+  "sphynx": {
+    "origin": "Canada",
+    "lifespan": "8–14 yrs",
+    "temperament": "Energetic, Mischievous, Warm, Social",
+    "fun_fact": "Despite looking hairless, they're covered in fine peach-fuzz and feel like warm suede!"
+  },
+  "thai": {
+    "origin": "Thailand",
+    "lifespan": "12–16 yrs",
+    "temperament": "Vocal, Social, Intelligent, Curious",
+    "fun_fact": "The traditional round-faced Siamese, preserved by Thai cat fanciers."
+  },
+  "tonkinese": {
+    "origin": "Canada",
+    "lifespan": "14–16 yrs",
+    "temperament": "Playful, Social, Affectionate, Vocal",
+    "fun_fact": "A Siamese × Burmese cross — they inherited the best traits of both!"
+  },
+  "toyger": {
+    "origin": "United States",
+    "lifespan": "10–15 yrs",
+    "temperament": "Relaxed, Friendly, Intelligent, Easygoing",
+    "fun_fact": "Bred to look like a miniature tiger — 'Toyger' = 'Toy Tiger'. Still being developed!"
+  },
+  "turkish_angora": {
+    "origin": "Turkey (Ankara)",
+    "lifespan": "12–18 yrs",
+    "temperament": "Playful, Affectionate, Intelligent, Energetic",
+    "fun_fact": "The Ankara Zoo has a special program to preserve this ancient Turkish breed."
+  },
+  "turkish_van": {
+    "origin": "Turkey (Lake Van)",
+    "lifespan": "12–17 yrs",
+    "temperament": "Active, Playful, Independent, Affectionate",
+    "fun_fact": "Known as 'the swimming cat' — they genuinely love water and are strong swimmers!"
+  },
+  "ukrainian_levkoy": {
+    "origin": "Ukraine",
+    "lifespan": "12–15 yrs",
+    "temperament": "Gentle, Sociable, Curious, Playful",
+    "fun_fact": "Created in Ukraine in 2004 — a Donskoy × Scottish Fold cross with folded ears and no fur."
+  },
+  "ural_rex": {
+    "origin": "Russia (Ural Mountains)",
+    "lifespan": "12–15 yrs",
+    "temperament": "Gentle, Calm, Sociable, Loyal",
+    "fun_fact": "A natural curly breed from the Ural Mountains, independently evolved from other Rex breeds."
+  },
+  "vankedisi": {
+    "origin": "Turkey",
+    "lifespan": "12–17 yrs",
+    "temperament": "Playful, Active, Independent, Curious",
+    "fun_fact": "The all-white version of the Turkish Van — 'Vankedisi' means 'Van cat' in Turkish."
+  }
+}
