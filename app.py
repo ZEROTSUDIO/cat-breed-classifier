@@ -18,7 +18,7 @@ st.set_page_config(
 )
 
 # ── Constants ─────────────────────────────────────────────────────────────────
-HF_REPO_ID       = "ZEROTSUDIO/cat-breed-classifier"   # ← your HF repo
+HF_REPO_ID       = "ZEROTSUDIOS/cat-breed-classifier"   # ← your HF repo
 MODEL_FILENAME   = "cat_breed_model.h5"
 MODEL_PATH       = os.path.join("model", MODEL_FILENAME)
 CLASS_NAMES_PATH = "model/class_names.json"
