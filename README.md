@@ -1,109 +1,117 @@
 # 🐱 Cat Breed Classifier
 
-> Upload a photo of your cat — AI will tell you the breed!
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io)
+[![Hugging Face Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model%20Hub-yellow)](https://huggingface.co/ZEROTSUDIOS/cat-breed-classifier)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11-blue.svg)](https://www.python.org/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.16+-orange.svg)](https://www.tensorflow.org/)
 
-A deep learning image classifier trained on **67 cat breeds** using Transfer Learning (MobileNetV2). Built as a Google Colab project with a Streamlit web app frontend.
+> Upload a photo of your cat — AI will identify the breed with confidence scores and detailed breed characteristics!
 
----
-
-## 🚀 Live Demo
-
-> *Coming soon — will be deployed on Streamlit Cloud after training*
+A deep learning image classifier trained on **67 cat breeds** using Transfer Learning with **EfficientNetV2S**. Featuring an interactive **Streamlit** web application, automatic weight downloads via **Hugging Face Hub**, and a complete training pipeline for **Google Colab**.
 
 ---
 
 ## 📸 Features
 
-- 🔮 **Top-3 breed predictions** with confidence scores
-- 📖 **Breed info cards** — origin, lifespan, temperament, fun facts
-- 📷 **Camera input** — take a photo directly in the browser
-- 📱 **Mobile friendly** layout
-
----
-
-## 🏗️ Project Structure
-
-```
-cat-breed-classifier/
-│
-├── cat_breed_classifier.ipynb  ← Google Colab training notebook
-├── app.py                      ← Streamlit web app (coming soon)
-├── requirements.txt            ← Python dependencies (coming soon)
-├── PROJECT_PLAN.md             ← Full project plan & task checklist
-└── .gitignore
-```
-
-> **Note**: Model files (`.h5`) are stored on Google Drive — too large for GitHub.
+- 🔮 **Top-3 Breed Predictions**: Displays the most likely breeds with confidence percentage bars.
+- 📖 **Comprehensive Breed Cards**: Shows origin, lifespan, temperament, and fun facts for identified breeds.
+- 📷 **Dual Input Modes**: Upload an image file (JPG/PNG) or take a photo directly with your device's camera.
+- ⚡ **Lightweight & Cloud-Ready**: Model weights (~130 MB) are automatically fetched on-demand from Hugging Face Hub, keeping the Git repository small and fast to clone.
+- 📱 **Responsive UI**: Optimized for both mobile and desktop screens.
 
 ---
 
 ## 🧠 Model Details
 
-| Detail | Value |
+| Detail | Specification |
 |---|---|
-| Base Model | MobileNetV2 (pretrained on ImageNet) |
-| Dataset | [Cat Breeds — Kaggle](https://www.kaggle.com/datasets/nikolasgegenava/cat-breeds) |
-| Classes | 67 cat breeds |
-| Images | 11,000+ |
-| Expected Accuracy | 85–92% |
-| Training Platform | Google Colab (T4 GPU, free tier) |
-
-### Architecture
-
-```
-Input (224×224×3)
-    ↓
-MobileNetV2 Base (pretrained, then fine-tuned)
-    ↓
-Global Average Pooling
-    ↓
-Dense 256 → ReLU → Dropout
-    ↓
-Dense 67 → Softmax
-    ↓
-Output: probability per breed
-```
-
-### Two-Phase Training
-
-| Phase | Strategy | LR | Epochs |
-|---|---|---|---|
-| 1 | Feature extraction (base frozen) | `1e-3` | 15 |
-| 2 | Fine-tuning (top 30 layers unfrozen) | `1e-5` | 20 |
+| **Base Architecture** | **EfficientNetV2S** (Pretrained on ImageNet) |
+| **Dataset** | [Cat Breeds Dataset — Kaggle](https://www.kaggle.com/datasets/nikolasgegenava/cat-breeds) |
+| **Classes** | 67 distinct cat breeds |
+| **Input Resolution** | 224 × 224 × 3 |
+| **Head Architecture** | `GlobalAveragePooling2D` → `Dense(256, ReLU)` → `BatchNormalization` → `Dropout(0.4)` → `Dense(67, Softmax)` |
+| **Training Pipeline** | Two-phase transfer learning (Feature extraction + Fine-tuning) |
+| **Model Storage** | Hosted on [Hugging Face Hub](https://huggingface.co/ZEROTSUDIOS/cat-breed-classifier) |
 
 ---
 
-## 🛠️ How to Train (Google Colab)
+## 🏗️ Project Structure
 
-1. Open `cat_breed_classifier.ipynb` in Google Colab
-2. Set runtime to **T4 GPU** (Runtime → Change runtime type)
-3. Upload your `kaggle.json` API key when prompted
-4. Run all cells — takes ~30 minutes
-5. Model is saved to your Google Drive automatically
+```text
+cat-breed-classifier/
+├── .devcontainer/
+│   └── devcontainer.json       # Development container configuration
+├── model/
+│   ├── breed_info.json         # Breed metadata, temperaments, origins, and fun facts
+│   └── class_names.json        # 67 target breed class labels
+├── app.py                      # Streamlit web application frontend
+├── cat_breed_classifier.ipynb  # Google Colab training notebook
+├── generate_notebook.py        # Python script to programmatically build the training notebook
+├── requirements.txt            # Application dependencies (TensorFlow, Streamlit, Hugging Face Hub)
+├── PROJECT_PLAN.md             # Project roadmap and checklist
+└── README.md                   # Project documentation
+```
 
 ---
 
-## 💻 How to Run the Web App (Coming Soon)
+## 💻 Running the Web App Locally
 
+### 1. Clone the Repository
 ```bash
+git clone https://github.com/ZEROTSUDIO/cat-breed-classifier.git
+cd cat-breed-classifier
+```
+
+### 2. Set Up Environment & Install Dependencies
+We recommend using Python 3.10 or 3.11:
+```bash
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
 pip install -r requirements.txt
+```
+
+### 3. Run the Streamlit App
+```bash
 streamlit run app.py
 ```
+> **Note**: On the first run, the app will automatically download the trained model (`cat_breed_model.h5`, ~130 MB) into the `model/` directory from Hugging Face Hub. Subsequent runs will use the cached model.
 
 ---
 
-## 📊 Results
+## 🛠️ Model Training (Google Colab)
 
-> *Will be updated after training runs*
+The model can be trained using `cat_breed_classifier.ipynb` on Google Colab with a free T4 GPU:
+
+1. Open `cat_breed_classifier.ipynb` in [Google Colab](https://colab.research.google.com/).
+2. Select **Runtime** > **Change runtime type** > **T4 GPU**.
+3. Set your Kaggle API key (via Kaggle API token / secrets) to automatically download the dataset.
+4. Run all cells:
+   - Downloads and preprocesses the 67-class cat dataset.
+   - Applies data augmentation (rotations, flips, zoom, contrast).
+   - Trains Phase 1 (frozen base) followed by Phase 2 (fine-tuning top layers).
+   - Evaluates performance with classification reports and confusion matrices.
+   - Automatically exports the final model and uploads it to Hugging Face Hub.
 
 ---
 
-## 🔗 Resources
+## 📦 Dependencies
 
-- [Dataset on Kaggle](https://www.kaggle.com/datasets/nikolasgegenava/cat-breeds)
-- [MobileNetV2 Paper](https://arxiv.org/abs/1801.04381)
-- [Streamlit Docs](https://docs.streamlit.io)
+Key libraries used in this project:
+- **TensorFlow / Keras** (`>=2.16.0`)
+- **Streamlit** (`>=1.30.0`)
+- **huggingface_hub** (`>=0.20.0`)
+- **Pillow** (`>=10.0.0`)
+- **NumPy**
 
 ---
 
-*Built with ❤️ · Google Colab + TensorFlow + Streamlit*
+## 🔗 Resources & Acknowledgments
+
+- **Dataset**: [Cat Breeds on Kaggle](https://www.kaggle.com/datasets/nikolasgegenava/cat-breeds) by Nikolas Gegenava
+- **Model Backbone**: [EfficientNetV2: Smaller Models and Faster Training (Tan & Le, 2021)](https://arxiv.org/abs/2104.00298)
+- **Model Repository**: [Hugging Face Hub - ZEROTSUDIOS/cat-breed-classifier](https://huggingface.co/ZEROTSUDIOS/cat-breed-classifier)
+- **UI Framework**: [Streamlit](https://streamlit.io/)
