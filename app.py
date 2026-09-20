@@ -87,10 +87,11 @@ def load_metadata():
 def predict(img: Image.Image, model, class_names, breed_info, top_k=3):
     from tensorflow.keras.applications.efficientnet_v2 import preprocess_input
 
-    img_rgb = img.convert("RGB").resize(IMG_SIZE)
-    arr = np.array(img_rgb, dtype=np.float32)
-    arr = preprocess_input(arr)          # ✅ correct scaling for EfficientNetV2
-    arr = np.expand_dims(arr, axis=0)
+    img_rgb    = img.convert("RGB").resize(IMG_SIZE)
+    img_rgb_np = np.array(img_rgb, dtype=np.uint8)          # keep original for overlay
+
+    arr = preprocess_input(img_rgb_np.astype(np.float32))   # ✅ correct scaling
+    arr = np.expand_dims(arr, axis=0)                        # (1, 224, 224, 3)
 
     probs   = model.predict(arr, verbose=0)[0]
     top_idx = np.argsort(probs)[::-1][:top_k]
@@ -108,7 +109,78 @@ def predict(img: Image.Image, model, class_names, breed_info, top_k=3):
             "temperament": info.get("temperament", "Unknown"),
             "fun_fact":    info.get("fun_fact",    ""),
         })
-    return results
+    return results, arr, img_rgb_np, int(top_idx[0])
+
+# ── Grad-CAM helpers ──────────────────────────────────────────────────────────
+def _get_last_conv_layer(model):
+    """Return the last Conv2D layer, searching inside nested sub-models first."""
+    import tensorflow as tf
+    for layer in model.layers:
+        if hasattr(layer, "layers"):                      # sub-model (e.g. EfficientNetV2S)
+            for sub in reversed(layer.layers):
+                if isinstance(sub, tf.keras.layers.Conv2D):
+                    return sub
+    for layer in reversed(model.layers):                  # fallback: flat model
+        if isinstance(layer, tf.keras.layers.Conv2D):
+            return layer
+    return None
+
+
+def compute_grad_cam(model, preprocessed_arr, img_rgb_np, class_idx):
+    """
+    Generate a Grad-CAM heatmap blended onto the original image.
+
+    Parameters
+    ----------
+    preprocessed_arr : np.ndarray, shape (1, H, W, 3) — model-ready input
+    img_rgb_np       : np.ndarray, shape (H, W, 3) uint8 — original RGB for overlay
+    class_idx        : int — target class for gradient computation
+
+    Returns
+    -------
+    np.ndarray (H, W, 3) uint8 overlay, or None on failure
+    """
+    import cv2
+    import tensorflow as tf
+
+    last_conv = _get_last_conv_layer(model)
+    if last_conv is None:
+        return None
+
+    # Sub-model that exposes both the last conv activations and final logits
+    grad_model = tf.keras.Model(
+        inputs=model.inputs,
+        outputs=[last_conv.output, model.output],
+    )
+
+    img_tensor = tf.cast(preprocessed_arr, tf.float32)
+
+    with tf.GradientTape() as tape:
+        conv_outputs, predictions = grad_model(img_tensor)
+        loss = predictions[:, class_idx]               # scalar for target class
+
+    grads       = tape.gradient(loss, conv_outputs)    # (1, h, w, C)
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))  # (C,)
+
+    conv_out = conv_outputs[0]                         # (h, w, C)
+    heatmap  = conv_out @ pooled_grads[..., tf.newaxis]   # (h, w, 1)
+    heatmap  = tf.squeeze(heatmap)                     # (h, w)
+    heatmap  = tf.nn.relu(heatmap)
+    heatmap  = heatmap / (tf.math.reduce_max(heatmap) + 1e-8)
+    heatmap_np = heatmap.numpy()
+
+    # Resize heatmap to match the display image
+    h, w = img_rgb_np.shape[:2]
+    heatmap_resized = cv2.resize(heatmap_np, (w, h))
+
+    # Jet colormap (blue → green → red)
+    heatmap_u8  = np.uint8(255 * heatmap_resized)
+    colored     = cv2.applyColorMap(heatmap_u8, cv2.COLORMAP_JET)
+    colored_rgb = cv2.cvtColor(colored, cv2.COLOR_BGR2RGB)
+
+    # Blend: 45 % heatmap + 55 % original
+    overlay = (colored_rgb * 0.45 + img_rgb_np * 0.55).astype(np.uint8)
+    return overlay
 
 # ── UI ────────────────────────────────────────────────────────────────────────
 st.title("🐱 Cat Breed Identifier")
@@ -156,7 +228,9 @@ if img_source:
 
     with col_results:
         with st.spinner("Analysing breed..."):
-            results = predict(img, model, class_names, breed_info)
+            results, preprocessed_arr, img_rgb_np, top_class_idx = predict(
+                img, model, class_names, breed_info
+            )
 
         st.subheader("Top Predictions")
 
@@ -180,7 +254,28 @@ if img_source:
     if top["fun_fact"]:
         st.info(f"💡 **Fun fact:** {top['fun_fact']}")
 
+    # ── Grad-CAM ──────────────────────────────────────────────────────────────
+    st.divider()
+    st.subheader("🔥 What the AI saw — Grad-CAM")
+    st.caption(
+        "Highlights the regions that most influenced the prediction. "
+        "🔴 Red = highly important · 🟡 Yellow = moderately important · 🔵 Blue = less important"
+    )
+
+    with st.spinner("Generating heatmap..."):
+        cam_overlay = compute_grad_cam(model, preprocessed_arr, img_rgb_np, top_class_idx)
+
+    if cam_overlay is not None:
+        cam_col1, cam_col2 = st.columns(2)
+        with cam_col1:
+            st.image(img_rgb_np, caption="Original image", use_container_width=True)
+        with cam_col2:
+            st.image(cam_overlay, caption=f"Grad-CAM — {top['breed']}", use_container_width=True)
+    else:
+        st.warning("⚠️ Could not generate Grad-CAM heatmap for this model.")
+
     # ── Confidence table ──────────────────────────────────────────────────────
+    st.divider()
     with st.expander("View all top-3 details"):
         for r in results:
             st.markdown(
