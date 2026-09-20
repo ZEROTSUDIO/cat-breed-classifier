@@ -1,6 +1,7 @@
 """
 Cat Breed Classifier — Streamlit Web App
-Upload a cat photo and get the breed predicted by a MobileNetV2 model.
+Upload a cat photo and get the breed predicted by an EfficientNetV2S model.
+Model weights are downloaded automatically from Hugging Face Hub on first run.
 """
 
 import json
@@ -17,23 +18,44 @@ st.set_page_config(
 )
 
 # ── Constants ─────────────────────────────────────────────────────────────────
-MODEL_PATH       = "model/cat_breed_model.h5"
+HF_REPO_ID       = "ZEROTSUDIOS/cat-breed-classifier"   # ← your HF repo
+MODEL_FILENAME   = "cat_breed_model.h5"
+MODEL_PATH       = os.path.join("model", MODEL_FILENAME)
 CLASS_NAMES_PATH = "model/class_names.json"
 BREED_INFO_PATH  = "model/breed_info.json"
 IMG_SIZE         = (224, 224)
+
+# ── Download model from Hugging Face if not cached locally ───────────────────
+def ensure_model_downloaded():
+    """Download the model from HF Hub if it doesn't exist locally."""
+    if not os.path.exists(MODEL_PATH):
+        from huggingface_hub import hf_hub_download
+        os.makedirs("model", exist_ok=True)
+        with st.spinner("⬇️ Downloading model from Hugging Face (~130 MB, first run only)..."):
+            hf_hub_download(
+                repo_id=HF_REPO_ID,
+                filename=MODEL_FILENAME,
+                local_dir="model",
+                local_dir_use_symlinks=False,
+            )
+        st.success("✅ Model downloaded!")
 
 # ── Load model & data (cached so it only runs once) ───────────────────────────
 @st.cache_resource(show_spinner="Loading model...")
 def load_model():
     import tensorflow as tf
+    from tensorflow.keras.applications.efficientnet_v2 import preprocess_input  # noqa: F401
+
+    ensure_model_downloaded()
+
     try:
         model = tf.keras.models.load_model(MODEL_PATH, compile=False)
         return model
     except Exception:
-        # Fallback: rebuild MobileNetV2 architecture and load weights directly
+        # Fallback: rebuild EfficientNetV2S architecture and load weights
         with open(CLASS_NAMES_PATH, encoding="utf-8") as f:
             num_classes = len(json.load(f))
-        base = tf.keras.applications.MobileNetV2(
+        base = tf.keras.applications.EfficientNetV2S(
             input_shape=(224, 224, 3),
             include_top=False,
             weights=None,
@@ -42,7 +64,9 @@ def load_model():
         inputs = tf.keras.Input(shape=(224, 224, 3))
         x = base(inputs, training=False)
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dropout(0.30)(x)
+        x = tf.keras.layers.Dense(512, activation="relu")(x)
+        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.Dropout(0.40)(x)
         x = tf.keras.layers.Dense(256, activation="relu")(x)
         x = tf.keras.layers.BatchNormalization()(x)
         x = tf.keras.layers.Dropout(0.30)(x)
@@ -61,8 +85,11 @@ def load_metadata():
 
 # ── Prediction helper ─────────────────────────────────────────────────────────
 def predict(img: Image.Image, model, class_names, breed_info, top_k=3):
+    from tensorflow.keras.applications.efficientnet_v2 import preprocess_input
+
     img_rgb = img.convert("RGB").resize(IMG_SIZE)
-    arr = np.array(img_rgb, dtype=np.float32) / 255.0
+    arr = np.array(img_rgb, dtype=np.float32)
+    arr = preprocess_input(arr)          # ✅ correct scaling for EfficientNetV2
     arr = np.expand_dims(arr, axis=0)
 
     probs   = model.predict(arr, verbose=0)[0]
@@ -88,18 +115,11 @@ st.title("🐱 Cat Breed Identifier")
 st.markdown("Upload a photo of your cat — AI will tell you the breed!")
 st.divider()
 
-# Check model files exist
-if not os.path.exists(MODEL_PATH):
+# Check JSON metadata exists (model will be auto-downloaded)
+if not os.path.exists(CLASS_NAMES_PATH) or not os.path.exists(BREED_INFO_PATH):
     st.error(
-        f"⚠️ Model file not found at `{MODEL_PATH}`.\n\n"
-        "Please download the model files from Google Drive and place them in a `model/` folder:\n"
-        "```\n"
-        "cat-breed-classifier/\n"
-        "└── model/\n"
-        "    ├── cat_breed_model.h5\n"
-        "    ├── class_names.json\n"
-        "    └── breed_info.json\n"
-        "```"
+        "⚠️ Metadata files not found. Please make sure `model/class_names.json` "
+        "and `model/breed_info.json` are present."
     )
     st.stop()
 
@@ -185,4 +205,4 @@ else:
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.divider()
-st.caption("Built with TensorFlow · MobileNetV2 · Streamlit · Trained on 67 cat breeds")
+st.caption("Built with TensorFlow · EfficientNetV2S · Streamlit · Trained on 67 cat breeds")

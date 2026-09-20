@@ -22,8 +22,9 @@ env/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Large model formats (only exclude if over 100 MB)
-# *.h5 files at ~26 MB are fine for GitHub — not excluded
+# Large model files — hosted on Hugging Face Hub, not committed to git
+# Download happens automatically in app.py on first run
+*.h5
 *.tflite
 *.pkl
 *.joblib

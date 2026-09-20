@@ -1,6 +1,13 @@
 """
 Generates cat_breed_classifier.ipynb — a Google Colab notebook for training
-a 67-class cat breed image classifier using MobileNetV2 Transfer Learning.
+a 67-class cat breed image classifier using EfficientNetV2S Transfer Learning.
+
+Improvements over MobileNetV2 baseline:
+  - Backbone: EfficientNetV2S (stronger, ~88 MB vs 14 MB)
+  - Preprocessing: correct preprocess_input for EfficientNetV2 (was /255 bug)
+  - Head: Dense(512) → Dense(256), deeper with more dropout
+  - Augmentation: added RandomTranslation for extra spatial variety
+  - Fine-tuning: top 80 layers unfrozen (was 30)
 """
 
 import json
@@ -25,10 +32,17 @@ cells = []
 # ── Title ──────────────────────────────────────────────────────────────
 cells.append(md(
 """# 🐱 Cat Breed Classifier
-### Transfer Learning with MobileNetV2 · 67 Cat Breeds
+### Transfer Learning with EfficientNetV2S · 67 Cat Breeds
 
 **Dataset**: [Cat Breeds — Kaggle](https://www.kaggle.com/datasets/nikolasgegenava/cat-breeds)  
 **Goal**: Classify cat breed from a photo. Model exported as `.h5` for a Streamlit web app.
+
+**Improvements in this version**:
+- 🔥 **EfficientNetV2S** backbone (replaces MobileNetV2 — much stronger feature extractor)
+- ✅ **Correct preprocessing** — `preprocess_input` instead of `/255` (was a bug)
+- 💪 **Stronger head** — `Dense(512) → Dense(256)` with higher dropout
+- 🎨 **More augmentation** — added `RandomTranslation` 
+- 🔓 **More fine-tuning** — top 80 layers unfrozen (was 30)
 
 ---
 > ⚠️ **Before running**: Runtime → Change runtime type → **T4 GPU**"""
@@ -68,18 +82,23 @@ print(f"📁 Save directory: {SAVE_DIR}")"""
 ))
 
 cells.append(code(
-"""# ─── Upload your kaggle.json API key ───────────────────────────────────
-# Go to kaggle.com → Account → API → Create New Token → upload the file below
-from google.colab import files
-import os, shutil
+"""# ─── Paste your Kaggle API token here ─────────────────────────────────
+# Go to kaggle.com → Settings → API → Create New Token
+# Copy the token string (starts with KGAT_...) and paste below
 
-print("📁 Upload your kaggle.json file...")
-uploaded = files.upload()
+import os
 
-os.makedirs('/root/.config/kaggle', exist_ok=True)
-shutil.move('/content/kaggle.json', '/root/.config/kaggle/kaggle.json')
-os.chmod('/root/.config/kaggle/kaggle.json', 0o600)
-print("✅ kaggle.json configured!")"""
+KAGGLE_TOKEN = 'KGAT_9740d09bffdde6753ab9223292ebc5e2'  # <-- your token
+
+# Save token to the path kaggle CLI reads automatically
+os.makedirs('/root/.kaggle', exist_ok=True)
+with open('/root/.kaggle/access_token', 'w') as f:
+    f.write(KAGGLE_TOKEN)
+os.chmod('/root/.kaggle/access_token', 0o600)
+
+# Quick test — should print dataset info without errors
+!kaggle datasets list --max-size 1 -q 2>&1 | head -3
+print("✅ Kaggle API token configured!")"""
 ))
 
 cells.append(code(
@@ -109,7 +128,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.applications import EfficientNetV2S
+from tensorflow.keras.applications.efficientnet_v2 import preprocess_input
 from tensorflow.keras.callbacks import (
     EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 )
@@ -238,24 +258,30 @@ cells.append(md("---\n## 🧹 Section 4 — Preprocess & Data Augmentation"))
 
 cells.append(code(
 """# ─── Config ────────────────────────────────────────────────────────────
-IMG_SIZE   = 224   # MobileNetV2 requires 224×224
+IMG_SIZE   = 224   # EfficientNetV2S default input size
 BATCH_SIZE = 32
 
 # ─── Augmentation pipeline (applied ONLY during training) ──────────────
+# Stronger augmentation helps with 67 fine-grained classes
 data_augmentation = keras.Sequential([
     layers.RandomFlip('horizontal'),
-    layers.RandomRotation(0.10),
-    layers.RandomZoom(0.10),
-    layers.RandomBrightness(0.10),
-    layers.RandomContrast(0.10),
+    layers.RandomRotation(0.15),
+    layers.RandomZoom(0.15),
+    layers.RandomBrightness(0.15),
+    layers.RandomContrast(0.15),
+    layers.RandomTranslation(0.10, 0.10),  # slight positional shift
 ], name='augmentation')
 
 # ─── Image loader ──────────────────────────────────────────────────────
+# NOTE: EfficientNetV2 expects pixel values in [0, 255] passed through
+# preprocess_input (which scales to [-1, 1] internally).
+# The previous /255.0 approach was incorrect for this backbone.
 def load_image(path, label):
     raw = tf.io.read_file(path)
     img = tf.image.decode_image(raw, channels=3, expand_animations=False)
     img = tf.image.resize(img, [IMG_SIZE, IMG_SIZE])
-    img = tf.cast(img, tf.float32) / 255.0   # → [0, 1]
+    img = tf.cast(img, tf.float32)
+    img = preprocess_input(img)   # ✅ correct scaling for EfficientNetV2
     return img, label
 
 def make_dataset(dataframe, augment=False, shuffle=False):
@@ -284,18 +310,24 @@ cells.append(code(
 sample_path = train_df['path'].iloc[0]
 raw = tf.io.read_file(sample_path)
 img = tf.image.decode_image(raw, channels=3, expand_animations=False)
-img = tf.cast(tf.image.resize(img, [IMG_SIZE, IMG_SIZE]), tf.float32) / 255.0
+img = tf.cast(tf.image.resize(img, [IMG_SIZE, IMG_SIZE]), tf.float32)
+img = preprocess_input(img)
 
 fig, axes = plt.subplots(2, 5, figsize=(16, 7))
 fig.suptitle('🎨 Same Image — 9 Different Augmentations', fontsize=13, fontweight='bold')
 
-axes[0, 0].imshow(img.numpy())
+# Clip to [0,1] just for display (preprocess_input scales to ~[-1,1])
+def to_display(t):
+    t = (t - t.numpy().min()) / (t.numpy().max() - t.numpy().min() + 1e-7)
+    return t.numpy()
+
+axes[0, 0].imshow(to_display(img))
 axes[0, 0].set_title('Original', fontweight='bold')
 axes[0, 0].axis('off')
 
 for ax in list(axes.flatten())[1:]:
     aug = data_augmentation(tf.expand_dims(img, 0), training=True)[0]
-    ax.imshow(aug.numpy())
+    ax.imshow(to_display(aug))
     ax.axis('off')
 
 plt.tight_layout()
@@ -308,10 +340,10 @@ plt.show()"""
 cells.append(md("---\n## 🧠 Section 5 — Build the Model (Transfer Learning)"))
 
 cells.append(code(
-"""# ─── MobileNetV2 + custom classification head ──────────────────────────
+"""# ─── EfficientNetV2S + stronger classification head ────────────────────
 def build_model(num_classes: int, img_size: int = 224):
-    # Pre-trained MobileNetV2 — freeze all layers
-    base = MobileNetV2(
+    # Pre-trained EfficientNetV2S — freeze all layers initially
+    base = EfficientNetV2S(
         input_shape=(img_size, img_size, 3),
         include_top=False,
         weights='imagenet'
@@ -319,9 +351,13 @@ def build_model(num_classes: int, img_size: int = 224):
     base.trainable = False
 
     inputs = keras.Input(shape=(img_size, img_size, 3))
-    x = base(inputs, training=False)          # run base in inference mode
-    x = layers.GlobalAveragePooling2D()(x)    # flatten feature maps
-    x = layers.Dropout(0.30)(x)
+    x = base(inputs, training=False)           # inference mode while frozen
+    x = layers.GlobalAveragePooling2D()(x)     # flatten feature maps
+
+    # Stronger head — two dense layers with batch norm + dropout
+    x = layers.Dense(512, activation='relu')(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Dropout(0.40)(x)
     x = layers.Dense(256, activation='relu')(x)
     x = layers.BatchNormalization()(x)
     x = layers.Dropout(0.30)(x)
@@ -338,7 +374,7 @@ train_p = sum(tf.size(w).numpy() for w in model.trainable_weights)
 frozen  = total - train_p
 print(f"\\n🔢 Total params   : {total:,}")
 print(f"   Trainable      : {train_p:,}  (our new head)")
-print(f"   Frozen         : {frozen:,}  (MobileNetV2 base)")"""
+print(f"   Frozen         : {frozen:,}  (EfficientNetV2S base)")"""
 ))
 
 cells.append(code(
@@ -363,8 +399,8 @@ cells.append(md(
 
 | Phase | Base Model | Epochs | LR | Goal |
 |---|---|---|---|---|
-| **1** Feature Extraction | Frozen | 15 | 1e-3 | ~75–80% val acc |
-| **2** Fine-Tuning | Top 30 layers unfrozen | 20 | 1e-5 | ~85–92% val acc |"""
+| **1** Feature Extraction | Frozen | 15 | 1e-3 | ~78–83% val acc |
+| **2** Fine-Tuning | Top 80 layers unfrozen | 20 | 5e-6 | ~87–93% val acc |"""
 ))
 
 cells.append(code(
@@ -397,18 +433,19 @@ print(f"\\n✅ Phase 1 complete!  Best val accuracy: {best_p1:.4f} ({best_p1*100
 
 cells.append(code(
 """# ─── Phase 2 — Fine-Tuning ─────────────────────────────────────────────
-# Unfreeze the last 30 layers of MobileNetV2
+# Unfreeze the last 80 layers of EfficientNetV2S
+# (EfficientNetV2S has ~450 layers, top-80 covers the last few blocks)
 base_model.trainable = True
-for layer in base_model.layers[:-30]:
+for layer in base_model.layers[:-80]:
     layer.trainable = False
 
 n_trainable = sum(1 for l in base_model.layers if l.trainable)
-print(f"🔓 Unfrozen {n_trainable} layers in MobileNetV2 base")
+print(f"🔓 Unfrozen {n_trainable} layers in EfficientNetV2S base")
 print(f"   Trainable params now: {model.count_params():,}")
 
-# Re-compile with 100× smaller learning rate
+# Re-compile with a very small LR — large backbone needs gentle updates
 model.compile(
-    optimizer=keras.optimizers.Adam(learning_rate=1e-5),
+    optimizer=keras.optimizers.Adam(learning_rate=5e-6),
     loss='sparse_categorical_crossentropy',
     metrics=[
         'accuracy',
@@ -424,10 +461,10 @@ callbacks_p2 = [
     EarlyStopping(monitor='val_accuracy', patience=7,
                   restore_best_weights=True, verbose=1),
     ReduceLROnPlateau(monitor='val_loss', factor=0.3,
-                      patience=3, min_lr=1e-8, verbose=1),
+                      patience=3, min_lr=1e-9, verbose=1),
 ]
 
-print("\\n🏋️  Phase 2 — fine-tuning top 30 base layers...")
+print("\\n🏋️  Phase 2 — fine-tuning top 80 base layers...")
 print("=" * 55)
 
 history_p2 = model.fit(
@@ -546,15 +583,16 @@ def show_predictions(dataframe, n=12):
             ax.axis('off')
             continue
 
-        img_arr = np.array(img_pil) / 255.0
-        pred    = model.predict(img_arr[np.newaxis], verbose=0)[0]
+        arr = np.array(img_pil, dtype=np.float32)
+        arr = preprocess_input(arr)            # ✅ must match training
+        pred    = model.predict(arr[np.newaxis], verbose=0)[0]
         top1_idx  = np.argmax(pred)
         top1_conf = pred[top1_idx]
         true_name = class_names[row['label']]
         pred_name = class_names[top1_idx]
         correct   = (top1_idx == row['label'])
 
-        ax.imshow(img_pil)
+        ax.imshow(img_pil)                     # display original PIL (RGB)
         ax.set_title(
             f"True: {true_name.replace('_',' ').title()}\\n"
             f"Pred: {pred_name.replace('_',' ').title()} ({top1_conf*100:.1f}%)",
@@ -677,6 +715,7 @@ cells.append(code(
 """# ─── Prediction function (copy this into your Streamlit app) ──────────
 import numpy as np
 from PIL import Image
+from tensorflow.keras.applications.efficientnet_v2 import preprocess_input as eff_preprocess
 
 def predict_breed(image_input, model, class_names, breed_info, top_k=3):
     \"\"\"
@@ -699,7 +738,8 @@ def predict_breed(image_input, model, class_names, breed_info, top_k=3):
         img = image_input.convert('RGB')
 
     img = img.resize((224, 224))
-    arr = np.array(img, dtype=np.float32) / 255.0
+    arr = np.array(img, dtype=np.float32)
+    arr = eff_preprocess(arr)          # ✅ must match training preprocessing
     arr = np.expand_dims(arr, axis=0)
 
     probs    = model.predict(arr, verbose=0)[0]
