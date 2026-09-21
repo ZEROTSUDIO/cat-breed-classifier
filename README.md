@@ -83,18 +83,22 @@ streamlit run app.py
 ---
 
 ## 🛠️ Model Training (Google Colab)
+ 
+### Option A: 67 Cat Breeds (`cat_breed_classifier.ipynb`)
+- **Dataset**: [nikolasgegenava/cat-breeds](https://www.kaggle.com/datasets/nikolasgegenava/cat-breeds) (67 classes)
+- Broadest breed coverage across common and exotic breeds.
 
-The model can be trained using `cat_breed_classifier.ipynb` on Google Colab with a free T4 GPU:
+### Option B: 20 Refined Cat Breeds with In-Notebook Upload Demo (`cat_breed_classifier_refined7k.ipynb`)
+- **Dataset**: [doctrinek/catbreedsrefined-7k](https://www.kaggle.com/datasets/doctrinek/catbreedsrefined-7k) (20 balanced classes, 350 images each)
+- High accuracy (~85–90%+), uniform class distribution, and faster training.
+- **Interactive In-Notebook Testing Demo**: Section 9 features an interactive file uploader (`google.colab.files.upload()`) allowing you to upload any cat picture from your computer to get immediate top-3 breed predictions and rich characteristic cards (origin, temperament, lifespan, and fun facts) without leaving Google Colab!
 
-1. Open `cat_breed_classifier.ipynb` in [Google Colab](https://colab.research.google.com/).
+#### Running in Google Colab:
+1. Open either notebook (`cat_breed_classifier.ipynb` or `cat_breed_classifier_refined7k.ipynb`) in [Google Colab](https://colab.research.google.com/).
 2. Select **Runtime** > **Change runtime type** > **T4 GPU**.
-3. Set your Kaggle API key (via Kaggle API token / secrets) to automatically download the dataset.
-4. Run all cells:
-   - Downloads and preprocesses the 67-class cat dataset.
-   - Applies data augmentation (rotations, flips, zoom, contrast).
-   - Trains Phase 1 (frozen base) followed by Phase 2 (fine-tuning top layers).
-   - Evaluates performance with classification reports and confusion matrices.
-   - Automatically exports the final model and uploads it to Hugging Face Hub.
+3. Set your Kaggle API token in Section 1 to automatically fetch the dataset.
+4. Run all cells through the two-phase training and evaluation pipeline.
+5. In `cat_breed_classifier_refined7k.ipynb`, scroll to **Section 9** to test your own cat photos!
 
 ---
 
